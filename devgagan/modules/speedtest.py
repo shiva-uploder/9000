@@ -1,17 +1,3 @@
-# ---------------------------------------------------
-# File Name: speedtest.py
-# Description: A Pyrogram bot for downloading files from Telegram channels or groups 
-#              and uploading them back to Telegram.
-# Author: Gagan
-# GitHub: https://github.com/devgaganin/
-# Telegram: https://t.me/team_spy_pro
-# YouTube: https://youtube.com/@dev_gagan
-# Created: 2025-01-11
-# Last Modified: 2025-01-11
-# Version: 2.0.5
-# License: MIT License
-# ---------------------------------------------------
-
 from time import time
 from speedtest import Speedtest
 import math
@@ -21,6 +7,7 @@ from devgagan import sex as gagan
 
 SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
 
+# Convert seconds into a readable time format
 def get_readable_time(seconds: int) -> str:
     result = ''
     (days, remainder) = divmod(seconds, 86400)
@@ -39,6 +26,7 @@ def get_readable_time(seconds: int) -> str:
     result += f'{seconds}s'
     return result
 
+# Convert bytes to human-readable format (e.g., KB, MB)
 def get_readable_file_size(size_in_bytes) -> str:
     if size_in_bytes is None:
         return '0B'
@@ -51,49 +39,66 @@ def get_readable_file_size(size_in_bytes) -> str:
     except IndexError:
         return 'File too large'
 
-
+# Speed test handler
 @gagan.on(events.NewMessage(incoming=True, pattern='/speedtest'))
 async def speedtest(event):
-    speed = await event.reply("Running Speed Test. Wait about some secs.")  #edit telethon
+    status = await event.reply("**Running Speed Test... Please wait.**")
+    
+    # Run Speedtest
     test = Speedtest()
     test.get_best_server()
     test.download()
     test.upload()
     test.results.share()
     result = test.results.dict()
-    path = (result['share'])
+    image_path = result['share']
+    
+    # Calculate bot uptime
     currentTime = get_readable_time(time() - botStartTime)
-    string_speed = f'''
-╭─《 🚀 SPEEDTEST INFO 》
-├ <b>Upload:</b> <code>{speed_convert(result['upload'], False)}</code>
-├ <b>Download:</b>  <code>{speed_convert(result['download'], False)}</code>
-├ <b>Ping:</b> <code>{result['ping']} ms</code>
-├ <b>Time:</b> <code>{result['timestamp']}</code>
-├ <b>Data Sent:</b> <code>{get_readable_file_size(int(result['bytes_sent']))}</code>
-╰ <b>Data Received:</b> <code>{get_readable_file_size(int(result['bytes_received']))}</code>
-╭─《 🌐 SPEEDTEST SERVER 》
-├ <b>Name:</b> <code>{result['server']['name']}</code>
-├ <b>Country:</b> <code>{result['server']['country']}, {result['server']['cc']}</code>
-├ <b>Sponsor:</b> <code>{result['server']['sponsor']}</code>
-├ <b>Latency:</b> <code>{result['server']['latency']}</code>
-├ <b>Latitude:</b> <code>{result['server']['lat']}</code>
-╰ <b>Longitude:</b> <code>{result['server']['lon']}</code>
-╭─《 👤 CLIENT DETAILS 》
-├ <b>IP Address:</b> <code>{result['client']['ip']}</code>
-├ <b>Latitude:</b> <code>{result['client']['lat']}</code>
-├ <b>Longitude:</b> <code>{result['client']['lon']}</code>
-├ <b>Country:</b> <code>{result['client']['country']}</code>
-├ <b>ISP:</b> <code>{result['client']['isp']}</code>
-├ <b>ISP Rating:</b> <code>{result['client']['isprating']}</code>
-╰ <b>Powered by Team nothing</b> 
-'''
-    try:
-        await event.reply(string_speed,file=path,parse_mode='html')
-        await speed.delete()
-    except Exception as g:
-        await speed.delete()
-        await event.reply(string_speed,parse_mode='html' )
+    
+    # Prepare the reply text with the new UI format
+    reply_text = f"""
+🟢 **Speed Test Completed!** 🟢
 
+📶 **💡 Test Information:**
+- **📥 Download Speed:** <code>{speed_convert(result['download'], False)}</code>
+- **📤 Upload Speed:** <code>{speed_convert(result['upload'], False)}</code>
+- **🕰️ Ping:** <code>{result['ping']} ms</code>
+- **🗓️ Test Time:** <code>{result['timestamp']}</code>
+
+⚡ **📊 Data Information:**
+- **📤 Data Sent:** <code>{get_readable_file_size(int(result['bytes_sent']))}</code>
+- **📥 Data Received:** <code>{get_readable_file_size(int(result['bytes_received']))}</code>
+
+🌍 **Server Details:**
+- **🏢 Server Name:** <code>{result['server']['name']}</code>
+- **🌎 Country:** <code>{result['server']['country']}</code> | **Code:** <code>{result['server']['cc']}</code>
+- **💨 Sponsor:** <code>{result['server']['sponsor']}</code>
+- **📍 Location:** Lat: <code>{result['server']['lat']}</code>, Lon: <code>{result['server']['lon']}</code>
+- **🕹️ Latency:** <code>{result['server']['latency']} ms</code>
+
+🖥️ **Client Information:**
+- **📶 IP Address:** <code>{result['client']['ip']}</code>
+- **🌍 Country:** <code>{result['client']['country']}</code>
+- **🌐 ISP:** <code>{result['client']['isp']}</code>
+- **📈 ISP Rating:** <code>{result['client']['isprating']}</code>
+- **📍 Location:** Lat: <code>{result['client']['lat']}</code>, Lon: <code>{result['client']['lon']}</code>
+
+🔋 **Bot Uptime:** <code>{currentTime}</code>
+
+🔒 **Powered by Team Nothing** 🔒
+"""
+    try:
+        # Send the speed test result as a photo with the new UI
+        await event.reply_photo(image_path, caption=reply_text, parse_mode="html")
+    except Exception as e:
+        # If there is an error, send the result as text
+        await event.reply_text(reply_text, parse_mode="html")
+    
+    # Delete the "Running Speed Test..." status message
+    await status.delete()
+
+# Function to convert speed to a readable format
 def speed_convert(size, byte=True):
     if not byte: size = size / 8
     power = 2 ** 10
