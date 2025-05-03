@@ -17,32 +17,32 @@ from devgagan.core.func import subscribe
 @app.on_message(filters.command("set"))
 async def set_commands(_, message: Message):
     if message.from_user.id not in OWNER_ID:
-        return await message.reply("**You are not authorized to use this command.**")
+        return await message.reply("**❌ You are not authorized to use this command.**")
 
     await app.set_bot_commands([
         BotCommand("start", "🚀 Start the bot"),
         BotCommand("batch", "🫠 Extract in bulk"),
-        BotCommand("login", "🔑 Get into the bot"),
-        BotCommand("logout", "🚪 Get out of the bot"),
+        BotCommand("login", "🔑 Login to the bot"),
+        BotCommand("logout", "🚪 Logout from the bot"),
         BotCommand("token", "🎲 Get 3 hours free access"),
         BotCommand("adl", "👻 Download audio from 30+ sites"),
         BotCommand("dl", "💀 Download videos from 30+ sites"),
-        BotCommand("freez", "🧊 Remove all expired user"),
-        BotCommand("pay", "₹ Pay now to get subscription"),
-        BotCommand("status", "⟳ Refresh Payment status"),
-        BotCommand("transfer", "💘 Gift premium to others"),
-        BotCommand("myplan", "⌛ Get your plan details"),
+        BotCommand("freez", "🧊 Remove all expired users"),
+        BotCommand("pay", "💳 Pay now to get a subscription"),
+        BotCommand("status", "⟳ Refresh payment status"),
+        BotCommand("transfer", "💝 Gift premium to others"),
+        BotCommand("myplan", "📋 Get your plan details"),
         BotCommand("add", "➕ Add user to premium"),
         BotCommand("rem", "➖ Remove from premium"),
         BotCommand("session", "🧵 Generate Pyrogramv2 session"),
-        BotCommand("settings", "⚙️ Personalize things"),
+        BotCommand("settings", "⚙️ Personalize your bot"),
         BotCommand("stats", "📊 Get stats of the bot"),
         BotCommand("plan", "🗓️ Check our premium plans"),
-        BotCommand("terms", "🥺 Terms and conditions"),
-        BotCommand("speedtest", "🚅 Speed of server"),
+        BotCommand("terms", "📜 Terms and Conditions"),
+        BotCommand("speedtest", "🚅 Test server speed"),
         BotCommand("lock", "🔒 Protect channel from extraction"),
-        BotCommand("gcast", "⚡ Broadcast message to bot users"),
-        BotCommand("help", "❓ If you're a noob, still!"),
+        BotCommand("gcast", "⚡ Broadcast a message to all users"),
+        BotCommand("help", "❓ Need help?"),
         BotCommand("cancel", "🚫 Cancel batch process")
     ])
     await message.reply("✅ **Commands configured successfully!**")
@@ -87,12 +87,13 @@ async def help_navigation(client, query: CallbackQuery):
 @app.on_message(filters.command("terms") & filters.private)
 async def terms(client, message: Message):
     text = (
-        "> 📜 **Terms and Conditions** 📜\n\n"
-        "✨ We are not responsible for user deeds...\n"
-        "✨ Payment to us does not guarantee authorization...\n"
+        "📜 **Terms and Conditions** 📜\n\n"
+        "✨ We are not responsible for user actions.\n"
+        "✨ Payment does not guarantee permanent access...\n"
+        "🔒 Only premium members can enjoy certain benefits...\n"
     )
     buttons = [
-        [InlineKeyboardButton("📋 See Plans", callback_data="see_plan")],
+        [InlineKeyboardButton("📋 See Premium Plans", callback_data="see_plan")],
         [InlineKeyboardButton("💬 Contact Now", url="https://t.me/SRC_SOLUTION_BOT")],
     ]
     await message.reply_text(text, reply_markup=InlineKeyboardMarkup(buttons))
@@ -102,8 +103,9 @@ async def terms(client, message: Message):
 @app.on_message(filters.command("plan") & filters.private)
 async def plan(client, message: Message):
     text = (
-        "> 💰 **Premium Price**:\n\n"
+        "💰 **Premium Plans** 💰\n\n"
         "Starting from $2 or 200 INR via Amazon Gift Card...\n"
+        "For more details on premium plans, check below! 🎯\n"
     )
     buttons = [
         [InlineKeyboardButton("📜 See Terms", callback_data="see_terms")],
@@ -115,7 +117,9 @@ async def plan(client, message: Message):
 @app.on_callback_query(filters.regex("see_plan"))
 async def see_plan(client, query: CallbackQuery):
     await query.message.edit_text(
-        "> 💰 **Premium Price**:\n\nStarting from $2 or 200 INR...",
+        "💰 **Premium Plans** 💰\n\n"
+        "Starting from $2 or 200 INR...\n"
+        "For more details, contact us or check our Terms below! 🎯",
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("📜 See Terms", callback_data="see_terms")],
             [InlineKeyboardButton("💬 Contact Now", url="https://t.me/SRC_SOLUTION_BOT")],
@@ -127,7 +131,9 @@ async def see_plan(client, query: CallbackQuery):
 @app.on_callback_query(filters.regex("see_terms"))
 async def see_terms(client, query: CallbackQuery):
     await query.message.edit_text(
-        "> 📜 **Terms and Conditions** 📜\n\n✨ We are not responsible...",
+        "📜 **Terms and Conditions** 📜\n\n✨ We are not responsible for users' actions...\n"
+        "✨ Payments do not guarantee authorization...\n"
+        "🔒 Premium access is required for some features...\n",
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("📋 See Plans", callback_data="see_plan")],
             [InlineKeyboardButton("💬 Contact Now", url="https://t.me/SRC_SOLUTION_BOT")],
