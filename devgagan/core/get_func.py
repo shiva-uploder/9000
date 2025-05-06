@@ -256,4 +256,7 @@ async def get_msg(userbot, sender, edit_id, msg_link, i, message):
             result = await app.send_audio(target_chat_id, file, caption=caption, reply_to_message_id=topic_id)
             await result.copy(LOG_GROUP)
             await edit.delete()
-            await remove_file
+        try:
+    await remove_file()
+except Exception as e:
+    print(f"File hataate waqt error: {e}")
